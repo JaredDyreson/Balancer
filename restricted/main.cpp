@@ -53,8 +53,8 @@ struct pending_queue_traits;
 
 template <>
 struct pending_queue_traits<node> {
-  //using container_type = std::vector<node>;
-  using container_type = std::set<node>;
+  using container_type = std::vector<node>;
+  //using container_type = std::set<node>;
   using predicate_type = greater_age;
   using type = std::priority_queue<node, container_type, predicate_type>;
 };
