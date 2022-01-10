@@ -94,13 +94,34 @@ An arbitrary number of requests are spawned, which are then fed into another int
 Upon insertion, the queue will reorder itself based on it's custom comparator function.
 This still retains functionality from the original priority queue in STL, however also checks for the element's presence.
 Some implementations can use a std::vector, however this checking process is $O(n)$ time, as all the elements would need to be evaluated.
+We are also operating under the assumption that there is a potential for duplicate elements to be introduced into the system, which can stem from improper use of threads.
 Please refer to the mathematical and algorithm analysis sections further down to get a more detailed explanation.
 
 \end{flushleft}
 
+\newpage
+
 \section{Events}
 
 Events are the only means of updating the state of the structure and are strictly outside influences to the system.
+Timers are a common event which are outside the confines of the current system and can be implemented using std::thread_sleep.
+More advanced events could measure the internal entropy of the system, such as the number of requests given or times the system reorders.
+Such functions can be expressed using the following equation:
+\[ 
+		y_{k} = \phi \left( \sum_{j=0}^{m}w_{kj} \cdot x_{j} \right)
+\]
+$y_{k}$ denotes the strength of the output given by the inputs along with their respective weights.
+Weights are used to signal how `important' an input is relative to others and can be generated using another outside algorithm.
+For example, larger drink orders will hold a higher weight relative to smaller orders from another source.
+The equation provided is the artificial neuron firing function, and it can be amended to fit this situation.
+Once a predetermined threshold has been met, the system can then be prompted to reorder.
+
+\section{Race Conditions}
+
+One important factor to consider is how will the system operate when the heap is reorder.
+A simple yet effective strategy is to apply a mutex over the resource, locking it from other processes that may wish to access the heap.
+It is also necessary to note that this is another form of the Banker's Algorithm, wherein multiple processes are vying for resources.
+An external class should manage the state of these processes and shall grant/deny requests.
 
 \newpage
 
@@ -119,7 +140,7 @@ function reorder {
 }
 \end{verbatim}
 
-\subsection{Mathematical Analysis}
+\subsubsection{Mathematical Analysis}
 
 
 \end{document}
