@@ -3,13 +3,14 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
+#include <mutex>
 #include <queue>
 #include <string>
 #include <thread>
-#include <mutex>
+#include <set>
 
-
-// AUTHOR: https://stackoverflow.com/questions/5810190/how-to-tell-a-stdpriority-queue-to-refresh-its-ordering
+// AUTHOR:
+// https://stackoverflow.com/questions/5810190/how-to-tell-a-stdpriority-queue-to-refresh-its-ordering
 
 class Accessor;
 
@@ -52,7 +53,8 @@ struct pending_queue_traits;
 
 template <>
 struct pending_queue_traits<node> {
-  using container_type = std::vector<node>;
+  //using container_type = std::vector<node>;
+  using container_type = std::set<node>;
   using predicate_type = greater_age;
   using type = std::priority_queue<node, container_type, predicate_type>;
 };
@@ -95,15 +97,13 @@ class pending_node_queue : private pending_queue_traits<node>::type {
 
 class Accessor {
  public:
-   Accessor(pending_node_queue _queue) {
-     this->myQueue = _queue;
-   }
+  Accessor(pending_node_queue _queue) { this->myQueue = _queue; }
   inline static pending_node_queue myQueue;
-  // Source : https://stackoverflow.com/a/6291589://stackoverflow.com/a/62915890 
+  // Source : https://stackoverflow.com/a/6291589://stackoverflow.com/a/62915890
 
-  static void reorderQueue() { 
+  static void reorderQueue() {
     std::cout << "I am reordering because I was told to" << std::endl;
-    myQueue.reorder(); 
+    myQueue.reorder();
   }
   bool isQueueEmpty() const { return this->myQueue.empty(); }
 };
@@ -124,7 +124,7 @@ void timer_start(std::function<void(void)> func, unsigned int interval) {
     while (true) {
       auto x = std::chrono::steady_clock::now() +
                std::chrono::milliseconds(interval);
-      std::cout << "Locking at " <<  interval <<  " milliseconds" << std::endl;
+      std::cout << "Locking at " << interval << " milliseconds" << std::endl;
       std::lock_guard<std::mutex> guard(reorderMutex);
       func();
       std::this_thread::sleep_until(x);
@@ -161,5 +161,4 @@ int main() {
 
   return 0;
 }
-
 
