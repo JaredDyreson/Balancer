@@ -51,7 +51,7 @@ Current implementations of priority queues in the C++ Standard Template Library 
 Container objects are protected member attributes and cannot explicitly be modified.
 This is a safety mechanism to not allow the user of the data structure to unintentionally break it.
 However, since the goal is to bypass this, Balancer is a class that inherits from the base priority queue structure and provides this interface.
-To still retain the original safety feature contained in the STL as only classes that are friends can request the data structure to reorder.
+To still retain the original safety feature contained in the STL; only classes that are friends can request the data structure to reorder.
 This also ensures that the structure cannot erratically change its state during the runtime of the program.
 \end{abstract}
 
@@ -67,10 +67,11 @@ This solution was provided by \href{https://stackoverflow.com/questions/5810190/
 \caption{Example of Priority Heap}
 \end{figure}
 
-Priority queues with a special comparator function can influence how it's structured.
-These functions can be customised to specific objects that are stored in the container.
+Priority queues with a predicate function can influence how it's structured.
+These functions can be tailored to the objects that are stored in the container.
 In most use cases, node objects should have a time stamp object that indicates how old it is.
-Older objects are generally assigned higher priority to avoid starvation.
+Older objects are generally assigned higher priority to avoid starvation, along with other criteria provided.
+These criteria are usually in the form of a predicate function.
 \end{flushleft}
 
 \newpage
@@ -81,7 +82,7 @@ Older objects are generally assigned higher priority to avoid starvation.
 
 Various types of programs can benefit from a reordering on demand paradigm.
 CPU schedulers, fast food preparation and reservation systems could see an efficiency increase by using such a data structure.
-All of these applications have some aspect of time that renders the tree stale.
+All of these applications have some aspect of time and dynamic data that can render the tree stale.
 
 \begin{figure}[!h]
 \centering
@@ -89,9 +90,9 @@ All of these applications have some aspect of time that renders the tree stale.
 \caption{Example system}
 \end{figure}
 
-This sketch shows how the newly designed priority heap in action with respect to generalized inputs and outputs.
-An arbitrary number of requests are spawned, which are then fed into another intermediary level that will funnel into the queue.
-Upon insertion, the queue will reorder itself based on it's custom comparator function.
+This sketch shows the newly designed priority heap in action with respect to generalized inputs and outputs.
+An arbitrary number of requests are spawned, which are then fed into an intermediary level that will then funnel into the queue.
+Upon insertion, the queue will reorder itself based on it's comparator function.
 This still retains functionality from the original priority queue in STL, however also checks for the element's presence.
 Some implementations can use a std::vector, however this checking process is $O(n)$ time, as all the elements would need to be evaluated.
 We are also operating under the assumption that there is a potential for duplicate elements to be introduced into the system, which can stem from improper use of threads.
@@ -104,7 +105,7 @@ Please refer to the mathematical and algorithm analysis sections further down to
 \section{Events}
 
 Events are the only means of updating the state of the structure and are strictly outside influences to the system.
-Timers are a common event which are outside the confines of the current system and can be implemented using std::thread_sleep.
+Timers are a common event which are outside the confines of the system and can be implemented using std::thread_sleep.
 More advanced events could measure the internal entropy of the system, such as the number of requests given or times the system reorders.
 Such functions can be expressed using the following equation:
 \[ 
@@ -151,5 +152,9 @@ function reorder {
 \end{verbatim}
 
 \subsubsection{Mathematical Analysis}
+
+The current implementation of std::make_heap operates at $O(n)$ time.
+This is because....
+To be continued when Chuck explains Taylor Series to me again.
 
 \end{document}
