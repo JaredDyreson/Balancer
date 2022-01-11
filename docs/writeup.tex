@@ -7,6 +7,8 @@
 \usepackage{listings}
 \usepackage{syntax}
 \usepackage{fancyvrb}
+\usepackage{tikz}
+\usepackage{pgfplots}
 
 \usepackage{graphicx}
 
@@ -156,5 +158,30 @@ function reorder {
 The current implementation of std::make_heap operates at $O(n)$ time.
 This is because....
 To be continued when Chuck explains Taylor Series to me again.
+% NOTE: https://tex.stackexchange.com/questions/142120/positioning-of-pgfplot-axis-labels
+\begin{figure}[!h]
+\centering
+\begin{tikzpicture}
+    \begin{axis}[
+        domain=0.125:220,
+        xmin=-10, xmax=220,
+        ymin=-5, ymax=220,
+        samples=400,
+        axis y line=center,
+        axis x line=middle,
+				x label style={at={(axis description cs:0.5,-0.1)},anchor=north},
+				y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south},
+				xlabel={Inputs},
+				ylabel={Time},
+				legend style={at={(1.4,.5)}},
+				legend entries={$x \ast \log_{2}(x)$, $x$}
+    ]
+        \addplot+[mark=none] {x * log2(x)};
+        \addplot+[mark=none] {x};
+    \end{axis}
+\end{tikzpicture}
+\caption{Time Complexity Differences}
+\end{figure}
+
 
 \end{document}
