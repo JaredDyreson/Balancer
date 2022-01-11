@@ -27,8 +27,8 @@ namespace extended_queue {
      * the queue are properly sorted
      */
 
-    template <class A, class B>
-    bool operator()(const A& lhs, const B& rhs) {
+    template <class A>
+    bool operator()(const A& lhs, const A& rhs) const {
       return lhs > rhs;
     }
   };
