@@ -4,7 +4,8 @@
 namespace extended_queue {
 template <typename U>
 
-bool extended_queue::queue_t<U>::conditional_add(U element, timestamp_type timestamp) {
+bool extended_queue::queue_t<U>::conditional_add(U element,
+                                                 timestamp_type timestamp) {
     auto contains_element = [&element](auto& x) { return element == x; };
 
     auto i =

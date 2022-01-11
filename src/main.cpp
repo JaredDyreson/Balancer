@@ -22,7 +22,7 @@ struct node {
   }
 
 	bool operator==(const node& other) {
-				return (this->name == other.name && this->timestamp == other.timestamp);
+		return this->name == other.name;
 	}
 };
 
