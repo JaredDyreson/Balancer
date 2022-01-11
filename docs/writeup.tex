@@ -115,13 +115,23 @@ Weights are used to signal how `important' an input is relative to others and ca
 For example, larger drink orders will hold a higher weight relative to smaller orders from another source.
 The equation provided is the artificial neuron firing function, and it can be amended to fit this situation.
 Once a predetermined threshold has been met, the system can then be prompted to reorder.
+It is important to have a reasonable threshold because the system could reorder too frequently and diminish efficiency.
 
 \section{Race Conditions}
 
 One important factor to consider is how will the system operate when the heap is reorder.
 A simple yet effective strategy is to apply a mutex over the resource, locking it from other processes that may wish to access the heap.
 It is also necessary to note that this is another form of the Banker's Algorithm, wherein multiple processes are vying for resources.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=9cm]{BankersAlgorithm}
+\caption{Banker's Algorithm}
+\end{figure}
+
 An external class should manage the state of these processes and shall grant/deny requests.
+Another approach would to shift the implementation to Rust, as it has a strong concurrency framework built into the language.
+Further analysis needs to be conducted at a later date.
 
 \newpage
 
@@ -142,6 +152,4 @@ function reorder {
 
 \subsubsection{Mathematical Analysis}
 
-
 \end{document}
-
