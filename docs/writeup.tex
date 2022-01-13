@@ -1,5 +1,6 @@
 \documentclass{article}
 
+
 \usepackage{color}
 \usepackage{mathrsfs,amsmath}
 \usepackage{xcolor}
@@ -14,7 +15,10 @@
 
 \graphicspath{ {./assets/} }
 
+\lstset{basicstyle=\ttfamily}
+
 \usepackage[margin=1.4in]{geometry}
+
 
 \title{Balancer | Analysis} 
 \author{Jared Dyreson}
@@ -42,6 +46,8 @@
 }
 
 \begin{document}
+
+\lstMakeShortInline`
 
 \maketitle
 \tableofcontents
@@ -107,14 +113,14 @@ Please refer to the mathematical and algorithm analysis sections further down to
 \section{Events}
 
 Events are the only means of updating the state of the structure and are strictly outside influences to the system.
-Timers are a common event which are outside the confines of the system and can be implemented using std::thread_sleep.
+Timers are a common event which are outside the confines of the system and can be implemented using `std::thread_sleep`.
 More advanced events could measure the internal entropy of the system, such as the number of requests given or times the system reorders.
 Such functions can be expressed using the following equation:
 \[ 
 		y_{k} = \phi \left( \sum_{j=0}^{m}w_{kj} \cdot x_{j} \right)
 \]
 $y_{k}$ denotes the strength of the output given by the inputs along with their respective weights.
-Weights are used to signal how `important' an input is relative to others and can be generated using another outside algorithm.
+Weights are used to signal how "important" an input is relative to others and can be generated using another outside algorithm.
 For example, larger drink orders will hold a higher weight relative to smaller orders from another source.
 The equation provided is the artificial neuron firing function, and it can be amended to fit this situation.
 Once a predetermined threshold has been met, the system can then be prompted to reorder.
@@ -122,9 +128,13 @@ It is important to have a reasonable threshold because the system could reorder 
 
 \section{Race Conditions}
 
+\begin{flushleft}
+
 One important factor to consider is how will the system operate when the heap is reorder.
 A simple yet effective strategy is to apply a mutex over the resource, locking it from other processes that may wish to access the heap.
 It is also necessary to note that this is another form of the Banker's Algorithm, wherein multiple processes are vying for resources.
+\end{flushleft}
+
 
 \begin{figure}[!h]
 \centering
@@ -132,9 +142,11 @@ It is also necessary to note that this is another form of the Banker's Algorithm
 \caption{Banker's Algorithm}
 \end{figure}
 
+\begin{flushleft}
 An external class should manage the state of these processes and shall grant/deny requests.
 Another approach would to shift the implementation to Rust, as it has a strong concurrency framework built into the language.
 Further analysis needs to be conducted at a later date.
+\end{flushleft}
 
 \newpage
 
@@ -155,7 +167,7 @@ function reorder {
 
 \subsubsection{Mathematical Analysis}
 
-The current implementation of std::make_heap operates at $O(n)$ time.
+The current implementation of `std::make_heap` operates at $O(n)$ time.
 This is because....
 To be continued when Chuck explains Taylor Series to me again.
 % NOTE: https://tex.stackexchange.com/questions/142120/positioning-of-pgfplot-axis-labels
@@ -174,7 +186,7 @@ To be continued when Chuck explains Taylor Series to me again.
 				xlabel={Inputs},
 				ylabel={Time},
 				legend style={at={(1.4,.5)}},
-				legend entries={$x \ast \log_{2}(x)$, $x$}
+				legend entries={$n \ast \log_{2}(n)$, $n$}
     ]
         \addplot+[mark=none] {x * log2(x)};
         \addplot+[mark=none] {x};
@@ -183,5 +195,73 @@ To be continued when Chuck explains Taylor Series to me again.
 \caption{Time Complexity Differences}
 \end{figure}
 
+\newpage
+
+\subsection{Proposed Solutions}
+
+Currently, there are two different approaches that can be taken:
+\begin{itemize}
+\item Sorting a std::vector | $O(n \: \log(n))$
+\item Reorder half of a red black tree | $O(\frac{n}{2}\log(\frac{n}{2}))$
+\end{itemize}
+
+\subsubsection{Sorting a Vector}
+
+\begin{flushleft}
+
+\begin{table}[!h]
+\begin{tabular}{|l|l|l|l|}
+\hline
+Data Structure & Best (\Omega)                       & Average                     & Worst (\Theta)                       \\ \hline 
+std::vector    & $n \: \log(n)$ & $n \: \log(n)$ & $n + n \log(n)$ \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[!h]
+\centering
+\begin{tikzpicture}
+    \begin{axis}[
+        domain=0.125:220,
+        xmin=-10, xmax=220,
+        ymin=-5, ymax=220,
+        samples=400,
+        axis y line=center,
+        axis x line=middle,
+				x label style={at={(axis description cs:0.5,-0.1)},anchor=north},
+				y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south},
+				xlabel={Inputs},
+				ylabel={Time},
+				legend style={at={(1.4,.5)}},
+				legend entries={$n \log(n)$, $n + n \log(n)$}
+    ]
+        \addplot+[mark=none] {x * log2(x)};
+        \addplot+[mark=none] {x + x * log2(x)};
+    \end{axis}
+\end{tikzpicture}
+\caption{Time Complexity Differences}
+\end{figure}
+
+The first solution is relatively easy to implement, as it wraps around a pre-existing STL data structure\footnote{std::vector}.
+This, however, comes at the cost of sorting which is bounded in linearithmic time.
+We can attempt to amortize the time complexity by increasing the length of time thread events are allowed to execute.
+An internal timer can also be embedded in the class to prevent further resorting, akin to the Bankers Algorithm outlined in a previous section.
+As stated above, thread events can include the measured entropy of the system.
+By increasing the threshold for the firing function, we can drive down the number of reordering requests.
+However, this introduces another issue of starvation as some elements in the container may never get to the top of the heap.
+Emergency restructuring of the container could lead to $O(n + n \log(n))$ time.
+This is because we are forced to first assess all elements given a set of criteria, re-assign priority and lastly resort the container.
+
+\end{flushleft}
+
+\subsubsection{Reorder Red Black Tree}
+
+The second solution, however, is going to be harder to pull off.
+In the diagram below, a tree like structure would represent our data, where the left hand side contains less important elements and vice versa for the right.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=13cm]{RedBlack}
+\caption{Split Red Black Tree}
+\end{figure}
 
 \end{document}
