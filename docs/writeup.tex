@@ -167,33 +167,55 @@ function reorder {
 
 \subsubsection{Mathematical Analysis}
 
-The current implementation of `std::make_heap` operates at $O(n)$ time.
-This is because....
-To be continued when Chuck explains Taylor Series to me again.
+\begin{flushleft}
+
+The current implementation of `std::make_heap` operates at $O(n)$ time and the source code can be found \href{https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a01051_source.html#l00375}{\underline{here}}.
+To construct a binary heap, it can be broken down into two steps:
+\begin{itemize}
+\item Put the nodes, in any order, into a complete binary tree of the right size  
+\item For each node, starting the bottom layer and going upward, run the bubble-down step on that node
+\end{itemize}
+
+At most half of the elements start one layer above that and can move down at least once.
+
+At most a quarter of the elements start one layer above that and can move down at least twice.
+More generally, at most $\frac{n}{2^{k}}$ of elements can be moved $k$ steps.
+The upper bound can be defined as this sum:
+\[ 
+		T(n) \le \sum_{i=0}^{\lceil \log_{2}n \rceil}\frac{n\:i}{2^{i}} = n
+		\implies \sum_{i=0}^{\lceil \log_{2}n \rceil}\frac{i}{2^{i}}
+\]
+
+Where `n` is the number of elements in the container and `i` is the level inside the heap.
+There is more to come...
+
+
 % NOTE: https://tex.stackexchange.com/questions/142120/positioning-of-pgfplot-axis-labels
-\begin{figure}[!h]
-\centering
-\begin{tikzpicture}
-    \begin{axis}[
-        domain=0.125:220,
-        xmin=-10, xmax=220,
-        ymin=-5, ymax=220,
-        samples=400,
-        axis y line=center,
-        axis x line=middle,
-				x label style={at={(axis description cs:0.5,-0.1)},anchor=north},
-				y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south},
-				xlabel={Inputs},
-				ylabel={Time},
-				legend style={at={(1.4,.5)}},
-				legend entries={$n \ast \log_{2}(n)$, $n$}
-    ]
-        \addplot+[mark=none] {x * log2(x)};
-        \addplot+[mark=none] {x};
-    \end{axis}
-\end{tikzpicture}
-\caption{Time Complexity Differences}
-\end{figure}
+%\begin{figure}[!h]
+%\centering
+%\begin{tikzpicture}
+    %\begin{axis}[
+        %domain=0.125:220,
+        %xmin=-10, xmax=220,
+        %ymin=-5, ymax=220,
+        %samples=400,
+        %axis y line=center,
+        %axis x line=middle,
+				%x label style={at={(axis description cs:0.5,-0.1)},anchor=north},
+				%y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south},
+				%xlabel={Inputs},
+				%ylabel={Time},
+				%legend style={at={(1.4,.5)}},
+				%legend entries={$n \ast \log_{2}(n)$, $n$}
+    %]
+        %\addplot+[mark=none] {x * log2(x)};
+        %\addplot+[mark=none] {x};
+    %\end{axis}
+%\end{tikzpicture}
+%\caption{Time Complexity Differences}
+%\end{figure}
+
+\end{flushleft}
 
 \newpage
 
